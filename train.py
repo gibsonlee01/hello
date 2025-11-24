@@ -47,14 +47,18 @@ class ImageCsvDataset(Dataset):
         img_path = os.path.join(self.img_dir, rel_path)
         img = Image.open(img_path).convert("RGB")
 
-        # PIL -> Tensor [C,H,W] float32 in [0,1]
-        img = torch.from_numpy(
-            (torch.ByteTensor(torch.ByteStorage.from_buffer(img.tobytes()))
-             .view(img.size[1], img.size[0], 3)
-             .numpy())
-        )  # H,W,C uint8
+        # # PIL -> Tensor [C,H,W] float32 in [0,1]
+        # img = torch.from_numpy(
+        #     (torch.ByteTensor(torch.ByteStorage.from_buffer(img.tobytes()))
+        #      .view(img.size[1], img.size[0], 3)
+        #      .numpy())
+        # )  # H,W,C uint8
 
-        img = img.permute(2, 0, 1).float() / 255.0  # C,H,W float
+        # img = img.permute(2, 0, 1).float() / 255.0  # C,H,W float
+        
+        from torchvision.transforms.functional import pil_to_tensor
+        img_t = pil_to_tensor(img).float() / 255.
+
 
         if self.transform is not None:
             img = self.transform(img)
